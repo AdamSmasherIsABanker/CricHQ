@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CricHQ Demo</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+  
+    <style>
+      body {
+        font-family: 'Kanit', sans-serif;
+      }
+      #clock {
+        font-size: 2em;
+        text-align: center;
+      }
+      .burger-menu {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 2rem;
+        height: 2rem;
+        background: transparent;
+        border: none;
+        z-index: 5;
+      }
+      .burger-menu div {
+        width: 2rem;
+        height: 0.25rem;
+        background: #333;
+      }
+
+
+      #options {
+    position: fixed;
+    bottom: 20px; /* Adjust the distance from the bottom as needed */
+    width: 100%;
+    max-height: 80px; /* Set a maximum height for the container */
+    display: flex;
+    justify-content: space-around;
+    align-items: center; /* Center the buttons vertically */
+  }
+
+  #options button {
+    padding: 30px 60px; /* Adjust padding for a larger default size */
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 35px; /* Adjust font size for a larger default size */
+    color: #fff;
+    background: linear-gradient(75deg, #8e44ad, #3498db);
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+
+  #options button:hover {
+    background: linear-gradient(75deg, #663399, #2980b9);
+    transform: scale(1.1);
+  }
+    </style>
+</head>
+<body>
+
+    <header style="background-color: orange; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 50px;">
+        <span style="color: white;">CricHQ</span>
+        <div class="burger-menu">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </header>
+      
+      <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <img id="clockImage" src="https://i.postimg.cc/PJzbXNjH/Remove.png" alt="Clock Image" style="width: 250px; height: 250px;">
+        <span id="clock">0</span>
+      </div>
+      
+      <div id="question" style="text-align: center; margin-top: 20px; font-size: 45px;"></div>
+      
+      <div id="options" style="position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around;"></div>
+</body>      
+
+  <script>
+    let counter = 0;
+    let points = 0;
+    let interval = setInterval(() => {
+      if(counter === 10) {
+        clearInterval(interval);
+        // Skip the current question without giving any points
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+          loadQuestion();
+        }
+        // Reset the counter
+        counter = 0;
+        // Start a new timer for the next question
+        interval = startTimer();
+      } else {
+        counter++;
+        document.getElementById("clock").textContent = counter;
+      }
+    }, 1000);
+
+    function startTimer() {
+      return setInterval(() => {
+        if(counter === 10) {
+          clearInterval(interval);
+          // Skip the current question without giving any points
+          currentQuestion++;
+          if (currentQuestion < questions.length) {
+            loadQuestion();
+          }
+          // Reset the counter
+          counter = 0;
+          // Start a new timer for the next question
+          interval = startTimer();
+        } else {
+          counter++;
+          document.getElementById("clock").textContent = counter;
+        }
+      }, 1000);
+    }
+  </script>
+
+<script>
+let questions = [
+  { question: "What is the term for hitting the ball over the boundary after one or more bounces?", answer: "Four", options: ["Four", "Six", "Full toss"] },
+  { question: "What is the term for hitting the ball over the boundary without bouncing?", answer: "Six", options: ["Four", "Six", "Yorker"] },
+  { question: "What is the term for a delivery that does not bounce on the pitch before reaching the batsman?", answer: "Full toss", options: ["Four", "Six", "Full toss"] },
+  { question: "What is the term for a delivery that bounces on the pitch in a location that is very close to the batsman's feet?", answer: "Yorker", options: ["Yorker", "Six", "Full toss"] },
+  { question: "What is the term for a delivery that is bowled at a slower speed?", answer: "Slower ball", options: ["Slower ball", "Six", "Full toss"] }
+];
+let currentQuestion = 0;
+
+function loadQuestion() {
+  document.getElementById("question").textContent = questions[currentQuestion].question;
+  let options = questions[currentQuestion].options;
+  let optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = '';
+  for(let i = 0; i < options.length; i++) {
+    let button = document.createElement("button");
+    button.textContent = options[i];
+    button.onclick = function() { checkAnswer(options[i]); };
+    optionsDiv.appendChild(button);
+  }
+}
+
+function checkAnswer(answer) {
+  if (answer === questions[currentQuestion].answer) {
+    alert('Correct!');
+    points++;
+  } else {
+    alert('Wrong!');
+  }
+  currentQuestion++;
+  if (currentQuestion < questions.length) {
+    loadQuestion();
+  } else {
+    // Hide the clock, question, and options
+    document.getElementById("clock").style.display = "none";
+    document.getElementById("clockImage").style.display = "none";
+    document.getElementById("question").style.display = "none";
+    document.getElementById("options").style.display = "none";
+
+    // Create a new div to display the total points
+    let pointsDiv = document.createElement("div");
+    pointsDiv.textContent = 'Quiz finished! Your total points: ' + points;
+    pointsDiv.style.textAlign = "center";
+    pointsDiv.style.position = "fixed";
+    pointsDiv.style.top = "50%";
+    pointsDiv.style.left = "50%";
+    pointsDiv.style.transform = "translate(-50%, -50%)";
+    pointsDiv.style.fontSize = "2em";
+
+    // Add the new div to the body
+    document.body.appendChild(pointsDiv);
+  }
+}
+
+loadQuestion();
+  </script>
+</body>
+</html>
